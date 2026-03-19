@@ -5,6 +5,9 @@ import java.util.List;
 
 // REFACTOR ME
 public class Game implements IGame {
+
+   GameLogger logger = new SoutGameLogger();
+
    List<Player> players = new ArrayList<>();
 
    Category rockCategory = new Category("Rock", new int[]{3, 7, 11});
@@ -33,10 +36,11 @@ public class Game implements IGame {
 
    public boolean add(String playerName) {
 
-      players.add(new Player(playerName, false, 0, 1));
+      Player newPlayer = new Player(playerName, false, 0, 1);
 
-      System.out.println(playerName + " was added");
-      System.out.println("They are player number " + players.size());
+      players.add(newPlayer);
+
+      logger.logPlayerAdded(newPlayer, players.size());
       return true;
    }
 
@@ -45,38 +49,36 @@ public class Game implements IGame {
    }
 
    public void roll(int roll) {
-      Player playerRoll = getCurrentPlayer();
-      System.out.println(playerRoll.getName() + " is the current player");
-      System.out.println("They have rolled a " + roll);
+      logger.logRoll(getCurrentPlayer(), roll);
 
-      if (playerRoll.isInJail()) {
+      if (getCurrentPlayer().isInJail()) {
          if (roll % 2 != 0) {
             isGettingOutOfPenaltyBox = true;
 
-            System.out.println(playerRoll.getName() + " is getting out of the penalty box");
-            playerRoll.move(roll);
+            logger.logPlayerGettingOuttaJail(getCurrentPlayer());
+            getCurrentPlayer().move(roll);
 
-            System.out.println(getUpdateOnPosition());
-            System.out.println(getUpdateOnCategory());
+            logger.logPlayerPosition(getCurrentPlayer());
+            logger.logCategory(currentCategory());
             askQuestion();
          } else {
-            System.out.println(playerRoll.getName() + " is not getting out of the penalty box");
+            logger.logPlayerNotGettingOuttaJail(getCurrentPlayer());
             isGettingOutOfPenaltyBox = false;
          }
 
       } else {
 
-         playerRoll.move(roll);
+         getCurrentPlayer().move(roll);
 
-         System.out.println(getUpdateOnPosition());
-         System.out.println(getUpdateOnCategory());
+         logger.logPlayerPosition(getCurrentPlayer());
+         logger.logCategory(currentCategory());
          askQuestion();
       }
 
    }
 
    private void askQuestion() {
-      System.out.println(currentCategory().getQuestions().removeFirst());
+      logger.logQuestion(currentCategory().getQuestions().removeFirst());
    }
 
 
@@ -96,9 +98,9 @@ public class Game implements IGame {
          if (currentPlayer == players.size()) currentPlayer = 0;
          return true;
       } else {
-         System.out.println("Answer was correct!!!!");
+         logger.logCorrectAnswer();
          getCurrentPlayer().setPurse(getCurrentPlayer().getPurse()+1);
-         System.out.println(getUpdateOnMoney());
+         logger.logPlayerMoney(getCurrentPlayer());
 
          boolean winner = didPlayerWin();
          currentPlayer++;
@@ -109,8 +111,8 @@ public class Game implements IGame {
    }
 
    public boolean wrongAnswer() {
-      System.out.println("Question was incorrectly answered");
-      System.out.println(getCurrentPlayer().getName() + " was sent to the penalty box");
+      logger.logIncorrectAnswer();
+      logger.logPlayerSendtInJail(getCurrentPlayer());
       getCurrentPlayer().inJail = true;
 
       currentPlayer++;
@@ -124,22 +126,5 @@ public class Game implements IGame {
 
    private boolean didPlayerWin() {
       return !(getCurrentPlayer().getPurse() == 6);
-   }
-
-   private String getUpdateOnMoney(){
-      return getCurrentPlayer().getName()
-              + " now has "
-              + getCurrentPlayer().getPurse()
-              + " Gold Coins.";
-   }
-
-   private String getUpdateOnPosition(){
-      return getCurrentPlayer().getName()
-              + "'s new location is "
-              + getCurrentPlayer().getPos();
-   }
-
-   private String getUpdateOnCategory(){
-      return "The category is " + currentCategory().getName();
    }
 }
