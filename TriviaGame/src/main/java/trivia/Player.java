@@ -42,4 +42,9 @@ public class Player {
         this.pos = pos;
     }
 
+    public void move(int n){
+        pos += n;
+        if (pos > 12) pos -= 12;
+    }
+
 }
