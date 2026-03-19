@@ -58,7 +58,7 @@ public class GameOld implements IGame {
       if (inPenaltyBox[currentPlayer]) {
          if (roll % 2 != 0) {
             isGettingOutOfPenaltyBox = true;
-
+            inPenaltyBox[currentPlayer] = false;
             System.out.println(players.get(currentPlayer) + " is getting out of the penalty box");
             places[currentPlayer] = places[currentPlayer] + roll;
             if (places[currentPlayer] > 12) places[currentPlayer] = places[currentPlayer] - 12;

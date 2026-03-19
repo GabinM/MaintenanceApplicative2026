@@ -1,4 +1,7 @@
-package trivia;
+package trivia.log;
+
+import trivia.Category;
+import trivia.Player;
 
 public class SoutGameLogger implements GameLogger {
     @Override
@@ -62,4 +65,5 @@ public class SoutGameLogger implements GameLogger {
     public void logQuestion(String question){
         System.out.println(question);
     }
+
 }

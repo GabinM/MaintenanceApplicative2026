@@ -1,4 +1,7 @@
-package trivia;
+package trivia.log;
+
+import trivia.Category;
+import trivia.Player;
 
 public interface GameLogger {
 

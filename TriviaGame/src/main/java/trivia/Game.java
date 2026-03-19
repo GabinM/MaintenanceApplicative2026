@@ -1,5 +1,8 @@
 package trivia;
 
+import trivia.log.GameLogger;
+import trivia.log.SoutGameLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,25 +16,38 @@ public class Game implements IGame {
    public final static int QUESTIONS_PER_CATEGORY = 50;
 
    GameLogger logger = new SoutGameLogger();
+   Board board = new Board();
 
    List<Player> players = new ArrayList<>();
 
-   List<Category> questionSet = new ArrayList<>();
-
-   Category rockCategory = new Category("Rock", new int[]{3, 7, 11});
-   Category popCategory = new Category("Pop", new int[]{0, 4, 8});
-   Category scienceCategory = new Category("Science", new int[]{1, 5, 9});
-   Category sportsCategory = new Category("Sports", new int[]{2, 6, 10});
+   Category rockCategory = new Category("Rock");
+   Category popCategory = new Category("Pop");
+   Category scienceCategory = new Category("Science");
+   Category sportsCategory = new Category("Sports");
 
    int currentPlayer = 0;
    boolean isGettingOutOfPenaltyBox;
 
    public Game() {
-      questionSet.add(rockCategory);
-      questionSet.add(scienceCategory);
-      questionSet.add(sportsCategory);
-      questionSet.add(popCategory);
-      for (Category cat : questionSet) {
+      board.addCategory(rockCategory);
+      board.addCategory(popCategory);
+      board.addCategory(scienceCategory);
+      board.addCategory(sportsCategory);
+
+      board.setSlotToCategory(0, popCategory);
+      board.setSlotToCategory(1, scienceCategory);
+      board.setSlotToCategory(2, sportsCategory);
+      board.setSlotToCategory(3, rockCategory);
+      board.setSlotToCategory(4, popCategory);
+      board.setSlotToCategory(5, scienceCategory);
+      board.setSlotToCategory(6, sportsCategory);
+      board.setSlotToCategory(7, rockCategory);
+      board.setSlotToCategory(8, popCategory);
+      board.setSlotToCategory(9, scienceCategory);
+      board.setSlotToCategory(10, sportsCategory);
+      board.setSlotToCategory(11, rockCategory);
+
+      for (Category cat : board.getCategories()) {
          cat.addQuestions(QUESTIONS_PER_CATEGORY);
       }
    }
@@ -60,7 +76,7 @@ public class Game implements IGame {
       if (getCurrentPlayer().isInJail()) {
          if (roll % 2 != 0) {
             isGettingOutOfPenaltyBox = true;
-
+            getCurrentPlayer().setInJail(false);
             logger.logPlayerGettingOuttaJail(getCurrentPlayer());
             getCurrentPlayer().move(roll);
 
@@ -89,12 +105,7 @@ public class Game implements IGame {
 
 
    private Category currentCategory() {
-      for(Category cat : questionSet){
-         if(cat.isCurrentCategory(getCurrentPlayer().getPos())){
-            return cat;
-         }
-      }
-      return questionSet.get(0);
+      return board.getCurrentCategory(getCurrentPlayer().getPos());
    }
 
    public boolean handleCorrectAnswer() {

@@ -5,12 +5,10 @@ import java.util.List;
 
 public class Category {
     private final String name;
-    private final int[] slots;
     private final LinkedList<String> questions ;
 
-    public Category(String name, int[] slots) {
+    public Category(String name) {
         this.name = name;
-        this.slots = slots;
         this.questions = new LinkedList<>();
     }
 
@@ -18,19 +16,8 @@ public class Category {
         return name;
     }
 
-    public int[] getSlots() {
-        return slots;
-    }
-
     public LinkedList<String> getQuestions() {
         return questions;
-    }
-
-    public boolean isCurrentCategory(int slot){
-        for(int i : slots){
-            if (i==slot-1) return true;
-        }
-        return false;
     }
 
     public void addQuestion(int questionIndex){
