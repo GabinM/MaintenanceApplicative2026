@@ -6,16 +6,22 @@ import java.util.List;
 // REFACTOR ME
 public class Game implements IGame {
 
+   public final static int BASE_MONEY_ON_START = 0;
+   public final static int REQUIRED_MONEY = 6;
+   public final static int BASE_SLOT_ON_START = 1;
+   public final static boolean START_IN_JAIL = false;
+   public final static int QUESTIONS_PER_CATEGORY = 50;
+
    GameLogger logger = new SoutGameLogger();
 
    List<Player> players = new ArrayList<>();
+
+   List<Category> questionSet = new ArrayList<>();
 
    Category rockCategory = new Category("Rock", new int[]{3, 7, 11});
    Category popCategory = new Category("Pop", new int[]{0, 4, 8});
    Category scienceCategory = new Category("Science", new int[]{1, 5, 9});
    Category sportsCategory = new Category("Sports", new int[]{2, 6, 10});
-
-   List<Category> questionSet = new ArrayList<>();
 
    int currentPlayer = 0;
    boolean isGettingOutOfPenaltyBox;
@@ -26,7 +32,7 @@ public class Game implements IGame {
       questionSet.add(sportsCategory);
       questionSet.add(popCategory);
       for (Category cat : questionSet) {
-         cat.addQuestions(50);
+         cat.addQuestions(QUESTIONS_PER_CATEGORY);
       }
    }
 
@@ -36,7 +42,7 @@ public class Game implements IGame {
 
    public boolean add(String playerName) {
 
-      Player newPlayer = new Player(playerName, false, 0, 1);
+      Player newPlayer = new Player(playerName, START_IN_JAIL, BASE_MONEY_ON_START, BASE_SLOT_ON_START);
 
       players.add(newPlayer);
 
@@ -94,18 +100,15 @@ public class Game implements IGame {
    public boolean handleCorrectAnswer() {
 
       if(getCurrentPlayer().isInJail() && !isGettingOutOfPenaltyBox) {
-         currentPlayer++;
-         if (currentPlayer == players.size()) currentPlayer = 0;
+         nextPlayer();
          return true;
       } else {
          logger.logCorrectAnswer();
-         getCurrentPlayer().setPurse(getCurrentPlayer().getPurse()+1);
+         getCurrentPlayer().addCoinToPurse(1);
          logger.logPlayerMoney(getCurrentPlayer());
 
          boolean winner = didPlayerWin();
-         currentPlayer++;
-         if (currentPlayer == players.size()) currentPlayer = 0;
-
+         nextPlayer();
          return winner;
       }
    }
@@ -113,10 +116,9 @@ public class Game implements IGame {
    public boolean wrongAnswer() {
       logger.logIncorrectAnswer();
       logger.logPlayerSendtInJail(getCurrentPlayer());
-      getCurrentPlayer().inJail = true;
+      getCurrentPlayer().setInJail(true);
 
-      currentPlayer++;
-      if (currentPlayer == players.size()) currentPlayer = 0;
+      nextPlayer();
       return true;
    }
 
@@ -125,6 +127,11 @@ public class Game implements IGame {
    }
 
    private boolean didPlayerWin() {
-      return !(getCurrentPlayer().getPurse() == 6);
+      return !(getCurrentPlayer().getPurse() == REQUIRED_MONEY);
+   }
+
+   private void nextPlayer() {
+      currentPlayer++;
+      if (currentPlayer == players.size()) currentPlayer = 0;
    }
 }

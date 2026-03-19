@@ -47,4 +47,8 @@ public class Player {
         if (pos > 12) pos -= 12;
     }
 
+    public void addCoinToPurse(int coins){
+        purse += coins;
+    }
+
 }
