@@ -2,33 +2,34 @@ package trivia;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 // REFACTOR ME
 public class Game implements IGame {
-   ArrayList players = new ArrayList();
+   List<Player> playerz = new ArrayList<>();
+   ArrayList players = new ArrayList<>();
    int[] places = new int[6];
    int[] purses = new int[6];
    boolean[] inPenaltyBox = new boolean[6];
 
-   LinkedList popQuestions = new LinkedList();
-   LinkedList scienceQuestions = new LinkedList();
-   LinkedList sportsQuestions = new LinkedList();
-   LinkedList rockQuestions = new LinkedList();
+   Category rockCategory = new Category("Rock", new int[]{3, 7, 11, 12});
+   Category popCategory = new Category("Pop", new int[]{0, 4, 8});
+   Category scienceCategory = new Category("Science", new int[]{1, 5, 9});
+   Category sportsCategory = new Category("Sports", new int[]{2, 6, 10});
+
+   List<Category> questionSet = new ArrayList<>();
 
    int currentPlayer = 0;
    boolean isGettingOutOfPenaltyBox;
 
    public Game() {
-      for (int i = 0; i < 50; i++) {
-         popQuestions.addLast("Pop Question " + i);
-         scienceQuestions.addLast(("Science Question " + i));
-         sportsQuestions.addLast(("Sports Question " + i));
-         rockQuestions.addLast(createRockQuestion(i));
+      questionSet.add(rockCategory);
+      questionSet.add(scienceCategory);
+      questionSet.add(sportsCategory);
+      questionSet.add(popCategory);
+      for (Category cat : questionSet) {
+         cat.addQuestions(50);
       }
-   }
-
-   public String createRockQuestion(int index) {
-      return "Rock Question " + index;
    }
 
    public boolean isPlayable() {
@@ -40,6 +41,8 @@ public class Game implements IGame {
       purses[howManyPlayers()] = 0;
       inPenaltyBox[howManyPlayers()] = false;
       players.add(playerName);
+
+      playerz.add(new Player(playerName, false, 0, 1));
 
       System.out.println(playerName + " was added");
       System.out.println("They are player number " + players.size());
@@ -65,7 +68,7 @@ public class Game implements IGame {
             System.out.println(players.get(currentPlayer)
                                + "'s new location is "
                                + places[currentPlayer]);
-            System.out.println("The category is " + currentCategory());
+            System.out.println("The category is " + currentCategory().getName());
             askQuestion();
          } else {
             System.out.println(players.get(currentPlayer) + " is not getting out of the penalty box");
@@ -80,41 +83,30 @@ public class Game implements IGame {
          System.out.println(players.get(currentPlayer)
                             + "'s new location is "
                             + places[currentPlayer]);
-         System.out.println("The category is " + currentCategory());
+         System.out.println("The category is " + currentCategory().getName());
          askQuestion();
       }
 
    }
 
    private void askQuestion() {
-      if (currentCategory() == "Pop")
-         System.out.println(popQuestions.removeFirst());
-      if (currentCategory() == "Science")
-         System.out.println(scienceQuestions.removeFirst());
-      if (currentCategory() == "Sports")
-         System.out.println(sportsQuestions.removeFirst());
-      if (currentCategory() == "Rock")
-         System.out.println(rockQuestions.removeFirst());
+      System.out.println(currentCategory().getQuestions().removeFirst());
    }
 
 
-   private String currentCategory() {
-      if (places[currentPlayer] - 1 == 0) return "Pop";
-      if (places[currentPlayer] - 1 == 4) return "Pop";
-      if (places[currentPlayer] - 1 == 8) return "Pop";
-      if (places[currentPlayer] - 1 == 1) return "Science";
-      if (places[currentPlayer] - 1 == 5) return "Science";
-      if (places[currentPlayer] - 1 == 9) return "Science";
-      if (places[currentPlayer] - 1 == 2) return "Sports";
-      if (places[currentPlayer] - 1 == 6) return "Sports";
-      if (places[currentPlayer] - 1 == 10) return "Sports";
-      return "Rock";
+   private Category currentCategory() {
+      for(Category cat : questionSet){
+         if(cat.isCurrentCategory(places[currentPlayer])){
+            return cat;
+         }
+      }
+      return questionSet.get(0);
    }
 
    public boolean handleCorrectAnswer() {
       if (inPenaltyBox[currentPlayer]) {
          if (isGettingOutOfPenaltyBox) {
-            System.out.println("Answer was corrent!!!!");
+            System.out.println("Answer was correct!!!!");
             purses[currentPlayer]++;
             System.out.println(players.get(currentPlayer)
                                + " now has "
