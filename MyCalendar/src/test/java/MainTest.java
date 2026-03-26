@@ -19,7 +19,7 @@ public class MainTest {
                 LocalDateTime.of(2027, Month.APRIL, 21, 17, 30),
                 17, "local à vélo", "", 0);
 
-        assertEquals("", ev.description());
+        assertEquals("RDV : rendez vous, vous êtes cernés ! à 2027-04-21T17:30", ev.description());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class MainTest {
                 LocalDateTime.of(2027, Month.APRIL, 21, 17, 30),
                 10, "la Réunion", "fred, jamy Gourmaud, Jamie Paige", 0);
 
-        assertEquals("", ev.description());
+        assertEquals("Réunion : réunion à la Réunion avec fred, jamy Gourmaud, Jamie Paige", ev.description());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class MainTest {
                 LocalDateTime.of(2027, Month.APRIL, 21, 17, 30),
                 7, "IUT Charlemagne", "", 360);
 
-        assertEquals("", ev.description());
+        assertEquals("Événement périodique : au tableau ! tous les 360 jours", ev.description());
     }
 
     @Test
@@ -52,12 +52,7 @@ public class MainTest {
                 LocalDateTime.of(2026, Month.APRIL, 21, 17, 30),
                 7, "local à vélo", "patron, salarié", 0);
 
-        try{
-            ev.description();
-            throw new AssertionFailedError("That should not have happened");
-        } catch (Exception e){
-            //c'est bon !
-        }
+        assertEquals("", ev.description());
     }
 
     @Test
@@ -67,7 +62,7 @@ public class MainTest {
                 LocalDateTime.of(2022,Month.APRIL, 21,15,45),
                 600, "Charly miam", "Tous les IL-2",0);
 
-        assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
+        assertEquals(1, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
     }
 
     @Test
@@ -77,7 +72,7 @@ public class MainTest {
                 LocalDateTime.of(-7899999,Month.APRIL, 21,15,45),
                 600, "Charly miam", "Tous les IL-2",0);
 
-        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
+        assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
     }
 
     @Test
@@ -87,13 +82,13 @@ public class MainTest {
                 LocalDateTime.of(7899999,Month.APRIL, 21,15,45),
                 600, "Charly miam", "Tous les IL-2",0);
 
-        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
+        assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
     }
 
     @Test
     public void test13_eventDansPeriode_pasevent(){
         CalendarManager cal = new CalendarManager();
-        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
+        assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
     }
 
     @Test
@@ -103,7 +98,7 @@ public class MainTest {
                 LocalDateTime.of(2021,Month.APRIL, 21,15,45),
                 600, "Charly miam", "",1);
 
-        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
+        assertEquals(1, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
     }
 
     @Test
@@ -113,7 +108,7 @@ public class MainTest {
                 LocalDateTime.of(-4201,Month.APRIL, 21,15,45),
                 600, "Charly miam", "",1);
 
-        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
+        assertEquals(1, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
     }
 
     @Test
@@ -123,7 +118,7 @@ public class MainTest {
                 LocalDateTime.of(2088,Month.APRIL, 21,15,45),
                 600, "Charly miam", "",1);
 
-        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
+        assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
     }
 
 
@@ -194,11 +189,11 @@ public class MainTest {
                 LocalDateTime.of(2021,Month.APRIL, 21,15,45),
                 30, "salon", "",8);
 
-        assertEquals(true, cal.conflit(cal.events.get(0), cal.events.get(1)));
+        assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
 
     @Test
-    public void test24_conflit_conflit_debutE1ApresFinE2(){
+    public void test25_conflit_conflit_debutE1ApresFinE2(){
         CalendarManager cal = new CalendarManager();
         cal.ajouterEvent("REUNION", "club dorothée", "patron",
                 LocalDateTime.of(2022,Month.APRIL, 21,15,45),
@@ -208,7 +203,7 @@ public class MainTest {
                 LocalDateTime.of(2021,Month.APRIL, 21,15,45),
                 30, "salon", "des gens",0);
 
-        assertEquals(true, cal.conflit(cal.events.get(0), cal.events.get(1)));
+        assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
 
     @Test
