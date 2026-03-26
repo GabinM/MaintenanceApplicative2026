@@ -6,8 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="main" />
+        <module name="MyCalendar" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="TempModule" target="22" />
+    </bytecodeTargetLevel>
   </component>
 </project>

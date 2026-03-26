@@ -1,5 +1,3 @@
-package main;
-
 import org.example.CalendarManager;
 import org.example.Event;
 import org.junit.Test;
@@ -89,6 +87,83 @@ public class MainTest {
                 600, "Charly miam", "",1);
 
         assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
+    }
+
+    @Test
+    public void test15_eventDansPeriode_event_avant_periodique(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("PERIODIQUE", "alerte incendie", "patron",
+                LocalDateTime.of(-4201,Month.APRIL, 21,15,45),
+                600, "Charly miam", "",1);
+
+        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
+    }
+
+    @Test
+    public void test16_eventDansPeriode_event_apres_periodique(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("PERIODIQUE", "alerte incendie", "patron",
+                LocalDateTime.of(2088,Month.APRIL, 21,15,45),
+                600, "Charly miam", "",1);
+
+        assertEquals(1000, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
+    }
+
+
+    @Test
+    public void test20_conflit_pasConflit_pasPeriodique(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("REUNION", "alerte incendie", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                600, "Charly miam", "pierre, paul, jacques",0);
+
+        cal.ajouterEvent("RDV_PERSONNEL", "faire les courses", "patron",
+                LocalDateTime.of(2048,Month.APRIL, 21,15,45),
+                600, "king jouet", "",0);
+
+        assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
+    }
+
+    @Test
+    public void test21_conflit_pasConflit_periodique(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("PERIODIQUE", "les minijusticiers sur Tfou", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                40, "salon", "",2);
+
+        cal.ajouterEvent("RDV_PERSONNEL", "faire les courses", "patron",
+                LocalDateTime.of(2048,Month.APRIL, 21,15,45),
+                600, "king jouet", "",0);
+
+        assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
+    }
+
+    @Test
+    public void test22_conflit_pasConflitOfficiel_periodique(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("PERIODIQUE", "les minijusticiers sur Tfou", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                40, "salon", "",2);
+
+        cal.ajouterEvent("PERIODIQUE", "titeuf sur gulli", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                30, "salon", "",2);
+
+        assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
+    }
+
+    @Test
+    public void test23_conflit_conflit_pasPeriodique(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("REUNION", "club dorothée", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                40, "salon", "moi, tous les zamis",0);
+
+        cal.ajouterEvent("RDV_PERSONNEL", "la spéciale d'inspecteur gadget", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                30, "salon", "",0);
+
+        assertEquals(true, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
 
 }
