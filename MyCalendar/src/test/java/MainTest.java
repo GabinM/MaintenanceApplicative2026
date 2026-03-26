@@ -1,6 +1,7 @@
 import org.example.CalendarManager;
 import org.example.Event;
 import org.junit.Test;
+import org.opentest4j.AssertionFailedError;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -41,6 +42,22 @@ public class MainTest {
                 7, "IUT Charlemagne", "", 360);
 
         assertEquals("", ev.description());
+    }
+
+    @Test
+    public void test04_descriptionAutre(){
+        Event ev = new Event("BAGARRE",
+                "1v1 sur Krumble",
+                "patron",
+                LocalDateTime.of(2026, Month.APRIL, 21, 17, 30),
+                7, "local à vélo", "patron, salarié", 0);
+
+        try{
+            ev.description();
+            throw new AssertionFailedError("That should not have happened");
+        } catch (Exception e){
+            //c'est bon !
+        }
     }
 
     @Test
@@ -164,6 +181,48 @@ public class MainTest {
                 30, "salon", "",0);
 
         assertEquals(true, cal.conflit(cal.events.get(0), cal.events.get(1)));
+    }
+
+    @Test
+    public void test24_conflit_pasconflit_deuxiemePeriodique(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("REUNION", "club dorothée", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                40, "salon", "moi, tous les zamis",0);
+
+        cal.ajouterEvent("PERIODIQUE", "la spéciale d'inspecteur gadget", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                30, "salon", "",8);
+
+        assertEquals(true, cal.conflit(cal.events.get(0), cal.events.get(1)));
+    }
+
+    @Test
+    public void test24_conflit_conflit_debutE1ApresFinE2(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("REUNION", "club dorothée", "patron",
+                LocalDateTime.of(2022,Month.APRIL, 21,15,45),
+                40, "salon", "moi, tous les zamis",0);
+
+        cal.ajouterEvent("REUNION", "la spéciale d'inspecteur gadget", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                30, "salon", "des gens",0);
+
+        assertEquals(true, cal.conflit(cal.events.get(0), cal.events.get(1)));
+    }
+
+    @Test
+    public void test30_afficherEvenements(){
+
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent("REUNION", "club dorothée", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                40, "salon", "moi, tous les zamis",0);
+
+        cal.ajouterEvent("PERIODIQUE", "la spéciale d'inspecteur gadget", "patron",
+                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
+                30, "salon", "",8);
+        cal.afficherEvenements();
     }
 
 }
