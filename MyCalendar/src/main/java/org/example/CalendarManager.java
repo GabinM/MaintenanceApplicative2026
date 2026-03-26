@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.event.Event;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

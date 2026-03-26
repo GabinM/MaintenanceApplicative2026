@@ -1,11 +1,9 @@
 import org.example.CalendarManager;
-import org.example.Event;
+import org.example.event.Event;
 import org.junit.Test;
-import org.opentest4j.AssertionFailedError;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.chrono.ChronoLocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
