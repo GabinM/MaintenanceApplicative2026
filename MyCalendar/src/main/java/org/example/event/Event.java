@@ -1,38 +1,50 @@
 package org.example.event;
 
+import org.example.types.*;
+
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Event {
-    public String type; // "RDV_PERSONNEL", "REUNION", "PERIODIQUE"
-    public String title;
-    public String proprietaire;
-    public LocalDateTime dateDebut;
-    public int dureeMinutes;
-    public String lieu; // utilisé seulement pour REUNION
-    public String participants; // séparés par virgules (pour REUNION uniquement)
-    public int frequenceJours; // uniquement pour PERIODIQUE
 
-    public Event(String type, String title, String proprietaire, LocalDateTime dateDebut, int dureeMinutes,
-                 String lieu, String participants, int frequenceJours) {
-        this.type = type;
+    private final EventType TYPE = EventType.AUTRE;
+
+    protected EventTitle title;
+    protected Individual proprietaire;
+    protected EventDate dateDebut;
+    protected EventDuration dureeMinutes;
+
+    public Event(EventTitle title, Individual proprietaire, EventDate dateDebut, EventDuration dureeMinutes) {
         this.title = title;
-        this.proprietaire = proprietaire;
         this.dateDebut = dateDebut;
         this.dureeMinutes = dureeMinutes;
-        this.lieu = lieu;
-        this.participants = participants;
-        this.frequenceJours = frequenceJours;
+        this.proprietaire = proprietaire;
     }
 
-    public String description() {
-        String desc = "";
-        if (type.equals("RDV_PERSONNEL")) {
-            desc = "RDV : " + title + " à " + dateDebut.toString();
-        } else if (type.equals("REUNION")) {
-            desc = "Réunion : " + title + " à " + lieu + " avec " + participants;
-        } else if (type.equals("PERIODIQUE")) {
-            desc = "Événement périodique : " + title + " tous les " + frequenceJours + " jours";
-        }
-        return desc;
+    public static Event createEvent(EventTitle title, Individual proprietaire, EventDate dateDebut, EventDuration dureeMinutes,
+                                            EventPlace lieu, EventParty participants, EventFrequency frequenceJours){
+        return new Event(title, proprietaire, dateDebut, dureeMinutes);
     }
+
+    public EventDate getDateDebut() {
+        return dateDebut;
+    }
+
+    public EventDuration getDureeMinutes() {
+        return dureeMinutes;
+    }
+
+    public String description(){
+        return "";
+    }
+
+    public boolean dansPeriode(EventDate dateDebut, EventDate dateFin){
+        return dateDebut.date().isBefore(this.dateDebut.date())  && dateFin.date().isAfter(this.dateDebut.date());
+    }
+
+    public EventType getType() {
+        return this.TYPE;
+    }
+
 }

@@ -1,54 +1,79 @@
 import org.example.CalendarManager;
-import org.example.event.Event;
+import org.example.event.*;
+import org.example.types.*;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MainTest {
 
+    static EventTitle generic_title = new EventTitle("title");
+    static Individual generic_individual = new Individual("individual");
+    static EventParty generic_party;
+    static EventDate generic_date = new EventDate(LocalDateTime.of(2027, Month.APRIL, 21, 17, 30));
+    static EventDuration generic_event_duration = new EventDuration(10);
+    static EventPlace generic_place = new EventPlace("place");
+    static EventFrequency generic_frequency = new EventFrequency(2);
+
+    public void prepare_test(){
+        Individual jamie = new Individual("jamie Paige");
+        Individual fred = new Individual("fred");
+        Individual jamy = new Individual("Jamy Gourmaud");
+        List<Individual> list = new ArrayList<>();
+        list.add(jamie);
+        list.add(fred);
+        list.add(jamy);
+        generic_party = new EventParty(list);
+    }
+
     @Test
     public void test01_descriptionRDV_PERSONNEL(){
-        Event ev = new Event("RDV_PERSONNEL",
-                "rendez vous, vous êtes cernés !",
-                "patron",
-                LocalDateTime.of(2027, Month.APRIL, 21, 17, 30),
-                17, "local à vélo", "", 0);
+        Event ev = new PersonnalEvent(
+                generic_title,
+                generic_individual,
+                generic_date,
+                generic_event_duration);
 
-        assertEquals("RDV : rendez vous, vous êtes cernés ! à 2027-04-21T17:30", ev.description());
+        assertEquals("RDV : title à 2027-04-21T17:30", ev.description());
     }
 
     @Test
     public void test02_descriptionREUNION(){
-        Event ev = new Event("REUNION",
-                "réunion",
-                "patron",
-                LocalDateTime.of(2027, Month.APRIL, 21, 17, 30),
-                10, "la Réunion", "fred, jamy Gourmaud, Jamie Paige", 0);
+        prepare_test();
+        MeetingEvent ev = new MeetingEvent(
+                generic_title,
+                generic_individual,
+                generic_date,
+                generic_event_duration, generic_place, generic_party);
 
-        assertEquals("Réunion : réunion à la Réunion avec fred, jamy Gourmaud, Jamie Paige", ev.description());
+        assertEquals("Réunion : title à place avec jamie Paige, fred, Jamy Gourmaud", ev.description());
     }
 
     @Test
     public void test03_descriptionPERIODIQUE(){
-        Event ev = new Event("PERIODIQUE",
-                "au tableau !",
-                "mendeleiev",
-                LocalDateTime.of(2027, Month.APRIL, 21, 17, 30),
-                7, "IUT Charlemagne", "", 360);
+        PeriodicEvent ev = new PeriodicEvent(
+                generic_title,
+                generic_individual,
+                generic_date,
+                generic_event_duration, generic_frequency);
 
-        assertEquals("Événement périodique : au tableau ! tous les 360 jours", ev.description());
+        assertEquals("Événement périodique : title tous les 2 jours", ev.description());
     }
 
     @Test
     public void test04_descriptionAutre(){
-        Event ev = new Event("BAGARRE",
-                "1v1 sur Krumble",
-                "patron",
-                LocalDateTime.of(2026, Month.APRIL, 21, 17, 30),
-                7, "local à vélo", "patron, salarié", 0);
+        Event ev = new Event(
+                generic_title,
+                generic_individual,
+                generic_date,
+                generic_event_duration);
 
         assertEquals("", ev.description());
     }
@@ -56,9 +81,9 @@ public class MainTest {
     @Test
     public void test10_eventDansPeriode_event_dedans(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "Soirée choucroute", "patron",
-                LocalDateTime.of(2022,Month.APRIL, 21,15,45),
-                600, "Charly miam", "Tous les IL-2",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2022,Month.APRIL, 21,15,45)),
+                new EventDuration(600), generic_place, generic_party,generic_frequency);
 
         assertEquals(1, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
     }
@@ -66,9 +91,9 @@ public class MainTest {
     @Test
     public void test11_eventDansPeriode_event_avant(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "Soirée choucroute", "patron",
-                LocalDateTime.of(-7899999,Month.APRIL, 21,15,45),
-                600, "Charly miam", "Tous les IL-2",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(-7899999,Month.APRIL, 21,15,45)),
+                new EventDuration(600), generic_place, generic_party,generic_frequency);
 
         assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
     }
@@ -76,9 +101,9 @@ public class MainTest {
     @Test
     public void test12_eventDansPeriode_event_apres(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "Soirée choucroute", "patron",
-                LocalDateTime.of(7899999,Month.APRIL, 21,15,45),
-                600, "Charly miam", "Tous les IL-2",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(7899999,Month.APRIL, 21,15,45)),
+                new EventDuration(600), generic_place, generic_party, generic_frequency);
 
         assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(12000,Month.AUGUST,12,0,0) ).size());
     }
@@ -92,9 +117,9 @@ public class MainTest {
     @Test
     public void test14_eventDansPeriode_event_dedans_periodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("PERIODIQUE", "alerte incendie", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                600, "Charly miam", "",1);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(1, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
     }
@@ -102,9 +127,9 @@ public class MainTest {
     @Test
     public void test15_eventDansPeriode_event_avant_periodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("PERIODIQUE", "alerte incendie", "patron",
-                LocalDateTime.of(-4201,Month.APRIL, 21,15,45),
-                600, "Charly miam", "",1);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(-4201,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(1, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
     }
@@ -112,9 +137,9 @@ public class MainTest {
     @Test
     public void test16_eventDansPeriode_event_apres_periodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("PERIODIQUE", "alerte incendie", "patron",
-                LocalDateTime.of(2088,Month.APRIL, 21,15,45),
-                600, "Charly miam", "",1);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2088,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(0, cal.eventsDansPeriode(LocalDateTime.of(-4200,Month.AUGUST,12,0,0), LocalDateTime.of(2028,Month.AUGUST,12,0,0) ).size());
     }
@@ -123,13 +148,13 @@ public class MainTest {
     @Test
     public void test20_conflit_pasConflit_pasPeriodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "alerte incendie", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                600, "Charly miam", "pierre, paul, jacques",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        cal.ajouterEvent("RDV_PERSONNEL", "faire les courses", "patron",
-                LocalDateTime.of(2048,Month.APRIL, 21,15,45),
-                600, "king jouet", "",0);
+        cal.ajouterEvent(EventType.RDV_PERSONNEL, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2048,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
@@ -137,13 +162,13 @@ public class MainTest {
     @Test
     public void test21_conflit_pasConflit_periodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("PERIODIQUE", "les minijusticiers sur Tfou", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                40, "salon", "",2);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        cal.ajouterEvent("RDV_PERSONNEL", "faire les courses", "patron",
-                LocalDateTime.of(2048,Month.APRIL, 21,15,45),
-                600, "king jouet", "",0);
+        cal.ajouterEvent(EventType.RDV_PERSONNEL, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2048,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
@@ -151,13 +176,13 @@ public class MainTest {
     @Test
     public void test22_conflit_pasConflitOfficiel_periodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("PERIODIQUE", "les minijusticiers sur Tfou", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                40, "salon", "",2);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        cal.ajouterEvent("PERIODIQUE", "titeuf sur gulli", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                30, "salon", "",2);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
@@ -165,13 +190,13 @@ public class MainTest {
     @Test
     public void test23_conflit_conflit_pasPeriodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "club dorothée", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                40, "salon", "moi, tous les zamis",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        cal.ajouterEvent("RDV_PERSONNEL", "la spéciale d'inspecteur gadget", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                30, "salon", "",0);
+        cal.ajouterEvent(EventType.RDV_PERSONNEL, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(true, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
@@ -179,13 +204,13 @@ public class MainTest {
     @Test
     public void test24_conflit_pasconflit_deuxiemePeriodique(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "club dorothée", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                40, "salon", "moi, tous les zamis",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        cal.ajouterEvent("PERIODIQUE", "la spéciale d'inspecteur gadget", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                30, "salon", "",8);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
@@ -193,13 +218,13 @@ public class MainTest {
     @Test
     public void test25_conflit_conflit_debutE1ApresFinE2(){
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "club dorothée", "patron",
-                LocalDateTime.of(2022,Month.APRIL, 21,15,45),
-                40, "salon", "moi, tous les zamis",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2022,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        cal.ajouterEvent("REUNION", "la spéciale d'inspecteur gadget", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                30, "salon", "des gens",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
         assertEquals(false, cal.conflit(cal.events.get(0), cal.events.get(1)));
     }
@@ -208,13 +233,13 @@ public class MainTest {
     public void test30_afficherEvenements(){
 
         CalendarManager cal = new CalendarManager();
-        cal.ajouterEvent("REUNION", "club dorothée", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                40, "salon", "moi, tous les zamis",0);
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        cal.ajouterEvent("PERIODIQUE", "la spéciale d'inspecteur gadget", "patron",
-                LocalDateTime.of(2021,Month.APRIL, 21,15,45),
-                30, "salon", "",8);
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
         cal.afficherEvenements();
     }
 
