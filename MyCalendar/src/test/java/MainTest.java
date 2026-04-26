@@ -243,4 +243,52 @@ public class MainTest {
         cal.afficherEvenements();
     }
 
+    @Test
+    public void test40_supprimerEvenement(){
+        CalendarManager cal = new CalendarManager();
+        cal.ajouterEvent(EventType.REUNION, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
+
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
+
+        cal.supprimerEvenement(cal.events.getFirst().getId());
+
+        assertEquals(1, cal.events.size());
+    }
+
+    @Test
+    public void test41_supprimerEvenement_listeVide(){
+        CalendarManager cal = new CalendarManager();
+
+        try{
+            cal.supprimerEvenement(EventId.create());
+            throw new RuntimeException();
+        } catch (Error e){
+            //c'est bon !
+        }
+
+        assertEquals(0, cal.events.size());
+    }
+
+    @Test
+    public void test42_supprimerEvenement_mauvaisId(){
+        CalendarManager cal = new CalendarManager();
+
+        cal.ajouterEvent(EventType.PERIODIQUE, generic_title, generic_individual,
+                new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
+                generic_event_duration, generic_place, generic_party,generic_frequency);
+
+        try{
+            cal.supprimerEvenement(EventId.create());
+            throw new RuntimeException();
+        } catch (Error e){
+            //c'est bon !
+        }
+
+        assertEquals(1, cal.events.size());
+    }
+
 }

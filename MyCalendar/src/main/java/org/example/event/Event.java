@@ -1,5 +1,6 @@
 package org.example.event;
 
+import com.sun.java.accessibility.util.EventID;
 import org.example.types.*;
 
 import java.time.LocalDateTime;
@@ -10,12 +11,14 @@ public class Event {
 
     private final EventType TYPE = EventType.AUTRE;
 
+    protected EventId id;
     protected EventTitle title;
     protected Individual proprietaire;
     protected EventDate dateDebut;
     protected EventDuration dureeMinutes;
 
     public Event(EventTitle title, Individual proprietaire, EventDate dateDebut, EventDuration dureeMinutes) {
+        this.id = EventId.create();
         this.title = title;
         this.dateDebut = dateDebut;
         this.dureeMinutes = dureeMinutes;
@@ -45,6 +48,10 @@ public class Event {
 
     public EventType getType() {
         return this.TYPE;
+    }
+
+    public EventId getId() {
+        return this.id;
     }
 
 }
