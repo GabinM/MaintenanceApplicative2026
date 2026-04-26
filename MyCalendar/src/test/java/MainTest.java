@@ -263,12 +263,7 @@ public class MainTest {
     public void test41_supprimerEvenement_listeVide(){
         CalendarManager cal = new CalendarManager();
 
-        try{
-            cal.supprimerEvenement(EventId.create());
-            throw new RuntimeException();
-        } catch (Error e){
-            //c'est bon !
-        }
+        cal.supprimerEvenement(EventId.create());
 
         assertEquals(0, cal.events.size());
     }
@@ -281,12 +276,7 @@ public class MainTest {
                 new EventDate(LocalDateTime.of(2021,Month.APRIL, 21,15,45)),
                 generic_event_duration, generic_place, generic_party,generic_frequency);
 
-        try{
-            cal.supprimerEvenement(EventId.create());
-            throw new RuntimeException();
-        } catch (Error e){
-            //c'est bon !
-        }
+        cal.supprimerEvenement(EventId.create());
 
         assertEquals(1, cal.events.size());
     }

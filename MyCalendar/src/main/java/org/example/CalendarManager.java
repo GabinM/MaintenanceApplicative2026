@@ -56,6 +56,7 @@ public class CalendarManager {
     }
 
     public void supprimerEvenement(EventId id){
-
+        List<Event> eventList = this.events.stream().filter(event -> event != null && event.getId().id().equals(id.id())).toList();
+        for(Event e : eventList) this.events.remove(e);
     }
 }
