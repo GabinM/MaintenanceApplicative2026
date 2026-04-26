@@ -36,21 +36,7 @@ public class CalendarManager {
     }
 
     public List<Event> eventsDansPeriode(LocalDateTime debut, LocalDateTime fin) {
-        List<Event> result = new ArrayList<>();
-        /*for (Event e : events) {
-            if (e.type.equals("PERIODIQUE")) {
-                LocalDateTime temp = e.dateDebut;
-                while (temp.isBefore(fin)) {
-                    if (!temp.isBefore(debut)) {
-                        result.add(e);
-                        break;
-                    }
-                    temp = temp.plusDays(e.frequenceJours);
-                }
-            } else if (!e.dateDebut.isBefore(debut) && !e.dateDebut.isAfter(fin)) {
-                result.add(e);
-            }
-        }*/
+
 
         return this.events.stream().filter(event -> event.dansPeriode(new EventDate(debut), new EventDate(fin))).toList();
     }
@@ -59,14 +45,8 @@ public class CalendarManager {
         LocalDateTime fin1 = e1.getDateDebut().date().plusMinutes(e1.getDureeMinutes().durationMinute());
         LocalDateTime fin2 = e2.getDateDebut().date().plusMinutes(e2.getDureeMinutes().durationMinute());
 
-        if (e1.getType().equals(EventType.PERIODIQUE) || e2.getType().equals(EventType.PERIODIQUE)) {
-            return false; // Simplification abusive
-        }
-
-        if (e1.getDateDebut().date().isBefore(fin2) && fin1.isAfter(e2.getDateDebut().date())) {
-            return true;
-        }
-        return false;
+        return !(e1.getType().equals(EventType.PERIODIQUE) || e2.getType().equals(EventType.PERIODIQUE))
+                && (e1.getDateDebut().date().isBefore(fin2) && fin1.isAfter(e2.getDateDebut().date()));
     }
 
     public void afficherEvenements() {
